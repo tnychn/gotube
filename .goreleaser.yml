@@ -1,0 +1,51 @@
+project_name: gotube
+
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    - go mod tidy
+    - go mod download
+
+builds:
+  - binary: gotubedl
+    main: "./cmd/gotubedl/main.go"
+    goos:
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+      - 386
+
+checksum:
+  name_template: "{{ .ProjectName }}-v{{ .Version }}_checksums.txt"
+  algorithm: sha256
+
+archives:
+  - name_template: "{{ .ProjectName }}-v{{ .Version }}_{{ .Os }}-{{ .Arch }}"
+    replacements:
+      linux: linux
+      windows: windows
+      darwin: darwin
+    wrap_in_directory: true
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - "*.md"
+      - "*.txt"
+
+release:
+  name_template: "v{{.Version}}"
+  draft: true
+  github:
+    owner: tnychn
+    name: gotube
+
+changelog:
+  sort: asc
